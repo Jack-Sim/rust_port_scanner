@@ -5,6 +5,7 @@ use std::str::FromStr;
 use std::process;
 use std::sync::mpsc::{Sender, channel};
 use std::thread;
+mod port_ids;
 
 // Max port we can sniff
 const MAX: u16 = 65535;
@@ -82,7 +83,7 @@ impl Arguments {
                     return Err("Invalid syntax");
                 }
             } else if args.len() == 6 {
-                let mut valid_flags: [String; 4] = ["-j".to_string(), "-threads".to_string(), "-p".to_string(), "-ports".to_string()];
+                let valid_flags: [String; 4] = ["-j".to_string(), "-threads".to_string(), "-p".to_string(), "-ports".to_string()];
                 let flag2 = args[3].clone();
                 let ipaddr = match IpAddr::from_str(&args[5]){
                     // Unwrap value inside Ok and parse it to ipaddr
@@ -178,7 +179,7 @@ fn main() {
             scan(tx, i, addr, num_threads, max_ports);
         });
     }
-
+    let port_id_map = port_ids::port_map();
     let mut out = vec![];
     drop(tx);
     for p in rx{
